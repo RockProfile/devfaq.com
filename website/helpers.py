@@ -29,6 +29,4 @@ def get_subdomain(request) -> str:
 
     domain_part = ".".join(full_host_split[1:])
 
-    if domain_part not in ALLOWED_HOSTS:
-        return ""
-    return subdomain
+    return "" if domain_part not in ALLOWED_HOSTS else subdomain

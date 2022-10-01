@@ -16,9 +16,19 @@ def get_subdomain(request) -> str:
         hostname = request.META["HTTP_HOST"]
     except KeyError:
         return ""
-    hostname_split = hostname.split(".")
-    subdomain = hostname_split[0]
+
     full_host = hostname.split(":")[0]
-    if len(hostname_split) < 3 or full_host in ALLOWED_HOSTS or subdomain.isdigit():
+    if full_host in ALLOWED_HOSTS:
+        return ""
+
+    full_host_split = full_host.split(".")
+    subdomain = full_host_split[0]
+
+    if len(full_host_split) < 3 or subdomain.isdigit():
+        return ""
+
+    domain_part = ".".join(full_host_split[1:])
+
+    if domain_part not in ALLOWED_HOSTS:
         return ""
     return subdomain

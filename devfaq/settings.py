@@ -38,7 +38,7 @@ DEBUG = bool(
 
 allowed_host_env = os.getenv(
     "DJANGO_ALLOWED_HOST",
-    "localhost",
+    "127.0.0.1",
 )
 
 ALLOWED_HOSTS: list[str] = [allowed_host_env]
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "website.apps.WebsiteConfig",
 ]
 
 MIDDLEWARE = [

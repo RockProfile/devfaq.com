@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: abc123
+
+  web:
+    build: .
+    restart: always
+    environment:
+      DJANGO_ALLOWED_HOST: '.dev-faq.com'
+      DJANGO_SECURITY_KEY: 'django-insecure-dsgfa£"$qeewasdfSADGSgwr'
+      DJANGO_DEBUG: 'True'
+    volumes:
+      - ../:/site/
+    expose:
+      - 80
+      - 443
+    ports:
+      - 8080:80
+      - 8443:443
+    depends_on:
+      - db

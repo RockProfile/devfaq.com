@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+
 import os
 from pathlib import Path
 
@@ -97,6 +98,18 @@ DATABASES = {
     }
 }
 
+if db_host := os.getenv("DJANGO_DATABASE_HOST", ""):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "HOST": str(os.getenv("DJANGO_DATABASE_HOST")),
+            "PORT": str(os.getenv("DJANGO_DATABASE_PORT")),
+            "NAME": str(os.getenv("DJANGO_DATABASE_NAME")),
+            "USER": str(os.getenv("DJANGO_DATABASE_USER")),
+            "PASSWORD": str(os.getenv("DJANGO_DATABASE_PASSWORD")),
+        },
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -138,3 +151,17 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+EMAIL_HOST = os.getenv(
+    "DJANGO_EMAIL_HOST",
+    "localhost",
+)
+EMAIL_PORT = int(
+    os.getenv(
+        "DJANGO_EMAIL_PORT",
+        25,
+    )
+)

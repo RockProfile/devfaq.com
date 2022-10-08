@@ -1,7 +1,15 @@
 """Tests for the website."""
 from django.test import TestCase
 
+from devfaq.settings import BASE_DIR
 from website import helpers
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
 
 
 class Request:
@@ -9,9 +17,21 @@ class Request:
 
     META: dict[str, str]
 
+    _scheme = ""
+
     def __init__(self):
         """Initialise Request."""
         self.META = {}
+
+    @property
+    def scheme(self) -> str:
+        """Mock the scheme."""
+        return self._scheme
+
+    @scheme.setter
+    def scheme(self, scheme: str):
+        """Mock the scheme."""
+        self._scheme = scheme
 
 
 class SubdomainTests(TestCase):
@@ -20,28 +40,123 @@ class SubdomainTests(TestCase):
     def setUp(self) -> None:
         """Initialise test requirements."""
         self.dummy_request = Request()
-        helpers.ALLOWED_HOSTS = ["devfaq.com"]
+        helpers.ALLOWED_HOSTS = [".devfaq.com"]
 
     def test_subdomain(self):
         """Test ensuring get_subdomain returns the correct subdomain."""
         host_details = [
-            {"host": "python.devfaq.com", "expected_subdomain": "python"},
-            {"host": "python.devfaq.com:8080", "expected_subdomain": "python"},
-            {"host": "php.devfaq.com", "expected_subdomain": "php"},
-            {"host": "devfaq.com", "expected_subdomain": ""},
-            {"host": "devfaq.com:8080", "expected_subdomain": ""},
-            {"host": "127.0.0.1", "expected_subdomain": ""},
-            {"host": "127.0.0.1:8080", "expected_subdomain": ""},
-            {"host": "other.domain.com", "expected_subdomain": ""},
-            {"host": "other.domain.com:8080", "expected_subdomain": ""},
-            {"host": "domain.com:8080", "expected_subdomain": ""},
-            {"host": "domain.com", "expected_subdomain": ""},
-            {"host": "domain", "expected_subdomain": ""},
+            {
+                "scheme": "http",
+                "host": "python.devfaq.com",
+                "expected_subdomain": "python",
+                "expected_hostname": "devfaq.com",
+                "expected_port": 80,
+                "expected_full_url": "http://python.devfaq.com",
+            },
+            {
+                "scheme": "http",
+                "host": "python.devfaq.com:8080",
+                "expected_subdomain": "python",
+                "expected_hostname": "devfaq.com",
+                "expected_port": 8080,
+                "expected_full_url": "http://python.devfaq.com:8080",
+            },
+            {
+                "scheme": "http",
+                "host": "php.devfaq.com",
+                "expected_subdomain": "php",
+                "expected_hostname": "devfaq.com",
+                "expected_port": 80,
+                "expected_full_url": "http://php.devfaq.com",
+            },
+            {
+                "scheme": "http",
+                "host": "php.devfaq.com",
+                "expected_subdomain": "php",
+                "expected_hostname": "devfaq.com",
+                "expected_port": 80,
+                "expected_full_url": "http://php.devfaq.com",
+            },
+            {
+                "scheme": "http",
+                "host": "devfaq.com:8080",
+                "expected_subdomain": "",
+                "expected_hostname": "devfaq.com",
+                "expected_port": 8080,
+                "expected_full_url": "http://devfaq.com:8080",
+            },
+            {
+                "scheme": "http",
+                "host": "127.0.0.1",
+                "expected_subdomain": "",
+                "expected_hostname": "127.0.0.1",
+                "expected_port": 80,
+                "expected_full_url": "http://127.0.0.1",
+            },
+            {
+                "scheme": "https",
+                "host": "127.0.0.1:8080",
+                "expected_subdomain": "",
+                "expected_hostname": "127.0.0.1",
+                "expected_port": 8080,
+                "expected_full_url": "https://127.0.0.1:8080",
+            },
+            {
+                "scheme": "https",
+                "host": "other.domain.com",
+                "expected_subdomain": "",
+                "expected_hostname": "other.domain.com",
+                "expected_port": 443,
+                "expected_full_url": "https://other.domain.com",
+            },
+            {
+                "scheme": "https",
+                "host": "other.domain.com:8080",
+                "expected_subdomain": "",
+                "expected_hostname": "other.domain.com",
+                "expected_port": 8080,
+                "expected_full_url": "https://other.domain.com:8080",
+            },
+            {
+                "scheme": "https",
+                "host": "domain.com:8080",
+                "expected_subdomain": "",
+                "expected_hostname": "domain.com",
+                "expected_port": 8080,
+                "expected_full_url": "https://domain.com:8080",
+            },
+            {
+                "scheme": "https",
+                "host": "domain.com",
+                "expected_subdomain": "",
+                "expected_hostname": "domain.com",
+                "expected_port": 443,
+                "expected_full_url": "https://domain.com",
+            },
+            {
+                "scheme": "https",
+                "host": "domain",
+                "expected_subdomain": "",
+                "expected_hostname": "domain",
+                "expected_port": 443,
+                "expected_full_url": "https://domain",
+            },
         ]
 
         for host_detail in host_details:
             self.dummy_request.META["HTTP_HOST"] = host_detail["host"]
-            self.assertEqual(
-                helpers.get_subdomain(request=self.dummy_request),
-                host_detail["expected_subdomain"],
+            self.dummy_request.scheme = host_detail["scheme"]
+            calculated_host_details: helpers.HostDetails = helpers.get_host_details(
+                request=self.dummy_request
             )
+            self.assertEqual(calculated_host_details.scheme, host_detail["scheme"])
+            self.assertEqual(
+                calculated_host_details.subdomain, host_detail["expected_subdomain"]
+            )
+            self.assertEqual(
+                calculated_host_details.hostname, host_detail["expected_hostname"]
+            )
+            self.assertEqual(
+                calculated_host_details.full_url, host_detail["expected_full_url"]
+            )
+            self.assertEqual(calculated_host_details.port, host_detail["expected_port"])

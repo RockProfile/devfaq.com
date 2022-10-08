@@ -3,22 +3,45 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: abc123
+      POSTGRES_USER: 'admin'
+      POSTGRES_PASSWORD: 'password123'
+      POSTGRES_DB: 'django'
+
+  mailtrap:
+    image: eaudeweb/mailtrap
+    restart: always
+    environment:
+      MT_USER: 'admin'
+      MT_PASSWD: 'password123'
+    ports:
+      - 8081:80
 
   web:
     build: .
     restart: always
+    command: /site/dev/run
     environment:
       DJANGO_ALLOWED_HOST: '.dev-faq.com'
-      DJANGO_SECURITY_KEY: 'django-insecure-dsgfa£"$qeewasdfSADGSgwr'
+      DJANGO_SECURITY_KEY: 'django-insecure-dsgfa£"qeewasdfSADGSgwr'
       DJANGO_DEBUG: 'True'
+      DJANGO_SUPERUSER_EMAIL: 'dummy@dev-faq.com'
+      DJANGO_SUPERUSER_USERNAME: 'admin'
+      DJANGO_SUPERUSER_PASSWORD: 'password123'
+      DJANGO_DATABASE_HOST: 'db'
+      DJANGO_DATABASE_USER: 'admin'
+      DJANGO_DATABASE_PASSWORD: 'password123'
+      DJANGO_DATABASE_NAME: 'django'
+      DJANGO_DATABASE_PORT: 5432
+      DJANGO_EMAIL_HOST: 'mailtrap'
+      DJANGO_EMAIL_PORT: 25
     volumes:
       - ../:/site/
     expose:
-      - 80
+      - 8080
       - 443
     ports:
-      - 8080:80
+      - 8080:8080
       - 8443:443
     depends_on:
       - db
+      - mailtrap

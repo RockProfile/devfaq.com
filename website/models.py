@@ -1,5 +1,6 @@
 """Models for the website."""
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -13,4 +14,14 @@ class BiographyModel(models.Model):
     website: models.URLField = models.URLField(max_length=255, blank=True, null=True)
     biography: models.CharField = models.CharField(
         max_length=1000, blank=False, null=False
+    )
+
+
+class Validation(models.Model):
+    """Model to handle user validation."""
+
+    user: models.OneToOneField = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_validated: models.BooleanField = models.BooleanField(default=False)
+    random_validation_string: models.CharField = models.CharField(
+        max_length=64, blank=True, null=True
     )

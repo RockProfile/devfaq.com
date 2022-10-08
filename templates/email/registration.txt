@@ -1,0 +1,5 @@
+Thankyou for registering with {{ SITE_NAME }}
+
+We would love for you to validate your account by clicking the link below:
+
+{{ VALIDATE_URL }}

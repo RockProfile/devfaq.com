@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+
 import os
 from pathlib import Path
 
@@ -97,9 +98,7 @@ DATABASES = {
     }
 }
 
-db_host = os.getenv("DJANGO_DATABASE_HOST", "")
-
-if db_host:
+if db_host := os.getenv("DJANGO_DATABASE_HOST", ""):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",

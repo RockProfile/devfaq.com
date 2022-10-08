@@ -52,19 +52,18 @@ def get_host_details(request) -> HostDetails:
 
     subdomain = hostname_no_port.split(".")[0]
     hostname_without_subdomain = hostname_no_port[len(subdomain) + 1 :]
-    if hostname_no_port in allowed_hosts:
+    if (
+        hostname_no_port in allowed_hosts
+        or hostname_without_subdomain not in allowed_hosts
+    ):
         host_details.hostname = hostname_no_port
-    elif hostname_without_subdomain in allowed_hosts:
+    else:
         host_details.hostname = hostname_without_subdomain
         host_details.subdomain = subdomain
-    else:
-        host_details.hostname = hostname_no_port
-    subdomain = ""
-    if host_details.subdomain:
-        subdomain = f"{host_details.subdomain}."
+    subdomain = f"{host_details.subdomain}." if host_details.subdomain else ""
     port = ""
-    if not (host_details.scheme == "https" and host_details.port == 443) and not (
-        host_details.scheme == "http" and host_details.port == 80
+    if (host_details.scheme != "https" or host_details.port != 443) and (
+        host_details.scheme != "http" or host_details.port != 80
     ):
         port = f":{host_details.port}"
     full_url = f"{host_details.scheme}://{subdomain}{host_details.hostname}{port}"

@@ -5,8 +5,11 @@ RUN apt-get update && \
 	rm -rf /var/lib/apt/lists/*
 
 WORKDIR /site
-RUN pip install django
-RUN pip install "python-dotenv"
 
-EXPOSE 80
-CMD ["python", "manage.py", "runserver", "0.0.0.0:80"]
+COPY run /usr/bin/run
+RUN chmod +x /usr/bin/run
+RUN pip install "django"
+RUN pip install "python-dotenv"
+RUN pip install "psycopg2"
+
+EXPOSE 8080

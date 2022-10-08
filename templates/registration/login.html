@@ -1,0 +1,9 @@
+{% if user.is_authenticated %}
+  <p>You are already logged in, no need to log in again.</p>
+{% else %}
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Log In</button>
+  </form>
+{% endif %}

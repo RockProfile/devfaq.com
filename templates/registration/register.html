@@ -1,0 +1,17 @@
+{% if user.is_active %}
+  Already registered
+{% else %}
+
+  <form method="POST">
+    {% if REGISTER_FORM.error_messages %}
+      <ul>
+        {% for error_message in REGISTER_FORM.error_messages %}
+          <li>{{ error_message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% csrf_token %}
+    {{ REGISTER_FORM }}
+    <button class="btn btn-primary" type="submit">Register</button>
+  </form>
+{% endif %}

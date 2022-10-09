@@ -25,3 +25,13 @@ class Validation(models.Model):
     random_validation_string: models.CharField = models.CharField(
         max_length=64, blank=True, null=True
     )
+
+
+class PermissionManagement(models.Model):
+    """Class created purely for permission management."""
+
+    class META:
+        """Meta class setting up PermissionManagement."""
+
+        managed = False
+        default_permissions = ()

@@ -11,7 +11,7 @@
       </ul>
     {% endif %}
     {% csrf_token %}
-    {{ REGISTER_FORM }}
+    {{ REGISTER_FORM.as_table }}
     <button class="btn btn-primary" type="submit">Register</button>
   </form>
 {% endif %}

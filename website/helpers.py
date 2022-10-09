@@ -1,9 +1,12 @@
 """Helper functions and classes."""
 from dataclasses import dataclass
 
+from django.contrib.auth.models import Permission, User
+from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 
 from devfaq.settings import ALLOWED_HOSTS
+from website.models import PermissionManagement
 
 
 @dataclass
@@ -15,6 +18,82 @@ class HostDetails:
     hostname: str = ""
     port: int = 443
     full_url: str = ""
+
+
+def create_permissions(subdomain: str):
+    """
+    Create permission set for subdomain.
+
+    Args:
+        subdomain: Subdomain to create permission set for
+    """
+    content_type = ContentType.objects.get_for_model(PermissionManagement)
+    Permission.objects.create(
+        codename=f"{subdomain}_owner",
+        name=f"Owner of {subdomain}",
+        content_type=content_type,
+    )
+    Permission.objects.create(
+        codename=f"{subdomain}_contributor",
+        name=f"Contributor to {subdomain}",
+        content_type=content_type,
+    )
+
+
+def delete_permissions(subdomain: str):
+    """
+    Delete permissions for a subdomain.
+
+    Args:
+        subdomain: Subdomain to delete permissions for.
+    """
+    content_type = ContentType.objects.get_for_model(PermissionManagement)
+    Permission.objects.filter(
+        content_type=content_type,
+        codename__in=(f"{subdomain}_contributor", f"{subdomain}_owner"),
+    ).delete()
+
+
+def user_add_permissions(user: User, subdomain: str, permissions: list[str]):
+    """
+    Add permissions to the given user.
+
+    Args:
+        user: The user to add permissions for
+        subdomain: The subdomain the permission is for
+        permissions: List of permissions to add (can be owner or contributor)
+    """
+    content_type = ContentType.objects.get_for_model(PermissionManagement)
+    for permission in permissions:
+        try:
+            permission_db = Permission.objects.get(
+                content_type=content_type, codename=f"{subdomain}_{permission}"
+            )
+            user.user_permissions.add(permission_db)
+            user.save()
+        except Permission.DoesNotExist:
+            pass
+
+
+def user_remove_permissions(user: User, subdomain: str, permissions: list[str]):
+    """
+    Remove permissions from the given user.
+
+    Args:
+        user: The user to remove permissions for
+        subdomain: The subdomain the permission is for
+        permissions: List of permissions to remove (can be owner or contributor)
+    """
+    content_type = ContentType.objects.get_for_model(PermissionManagement)
+    for permission in permissions:
+        try:
+            permission_db = Permission.objects.get(
+                content_type=content_type, codename=f"{subdomain}_{permission}"
+            )
+            user.user_permissions.remove(permission_db)
+            user.save()
+        except Permission.DoesNotExist:
+            pass
 
 
 def get_host_details(request) -> HostDetails:

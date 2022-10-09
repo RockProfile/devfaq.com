@@ -1,6 +1,7 @@
 """Views for the website."""
 import random
 import string
+from typing import Union
 
 from django.contrib.auth import login
 from django.contrib.auth.models import User
@@ -37,7 +38,7 @@ def register(request) -> HttpResponse:
     Return:
         HttpResponse for the registration page
     """
-    context: dict[str, str] = {}
+    context: dict[str, Union[CustomCreationForm, str]] = {}
     if request.method == "POST":
         form = CustomCreationForm(request.POST)
         if form.is_valid():
@@ -76,7 +77,7 @@ def register(request) -> HttpResponse:
         form = CustomCreationForm()
 
     context = {
-        "REGISTER_FORM": str(form.as_table),
+        "REGISTER_FORM": form,
     }
     return render(
         request=request, template_name="registration/register.html", context=context

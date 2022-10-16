@@ -1,0 +1,9 @@
+{% extends "website/main.html" %}
+{% load static %}
+{% block content %}
+  {% if user.is_active %}
+    <a href="/create_site">Create Site</a>
+  {% else %}
+    Please activate your account by clicking the link we have sent you.
+  {% endif %}
+{% endblock %}

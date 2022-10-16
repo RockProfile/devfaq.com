@@ -1,17 +1,20 @@
-{% if user.is_active %}
-  Already registered
-{% else %}
-
-  <form method="POST">
-    {% if REGISTER_FORM.error_messages %}
-      <ul>
-        {% for error_message in REGISTER_FORM.error_messages %}
-          <li>{{ error_message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-    {% csrf_token %}
-    {{ REGISTER_FORM.as_table }}
-    <button class="btn btn-primary" type="submit">Register</button>
-  </form>
-{% endif %}
+{% extends "website/main.html" %}
+{% load static %}
+{% block content %}
+  {% if user.is_authenticated %}
+    Already registered
+  {% else %}
+    <form method="POST" hx-post="/register" hx-headers='{"accept": "application/json"}'>
+      {% if FORM.errors  %}
+        <ul>
+          {% for error_message in FORM.error_messages %}
+            <li>{{ error_message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% csrf_token %}
+      {{ FORM.as_table }}
+      <button class="btn btn-primary" type="submit" id="submit_form">Register</button>
+    </form>
+  {% endif %}
+{% endblock %}

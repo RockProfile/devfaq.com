@@ -6,7 +6,7 @@ from website import helpers
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
@@ -40,50 +40,50 @@ class SubdomainTests(TestCase):
     def setUp(self) -> None:
         """Initialise test requirements."""
         self.dummy_request = Request()
-        helpers.ALLOWED_HOSTS = [".devfaq.com"]
+        helpers.ALLOWED_HOSTS = [".dev-faq.com"]
 
     def test_subdomain(self):
         """Test ensuring get_subdomain returns the correct subdomain."""
         host_details = [
             {
                 "scheme": "http",
-                "host": "python.devfaq.com",
+                "host": "python.dev-faq.com",
                 "expected_subdomain": "python",
-                "expected_hostname": "devfaq.com",
+                "expected_hostname": "dev-faq.com",
                 "expected_port": 80,
-                "expected_full_url": "http://python.devfaq.com",
+                "expected_full_url": "http://python.dev-faq.com",
             },
             {
                 "scheme": "http",
-                "host": "python.devfaq.com:8080",
+                "host": "python.dev-faq.com:8080",
                 "expected_subdomain": "python",
-                "expected_hostname": "devfaq.com",
+                "expected_hostname": "dev-faq.com",
                 "expected_port": 8080,
-                "expected_full_url": "http://python.devfaq.com:8080",
+                "expected_full_url": "http://python.dev-faq.com:8080",
             },
             {
                 "scheme": "http",
-                "host": "php.devfaq.com",
+                "host": "php.dev-faq.com",
                 "expected_subdomain": "php",
-                "expected_hostname": "devfaq.com",
+                "expected_hostname": "dev-faq.com",
                 "expected_port": 80,
-                "expected_full_url": "http://php.devfaq.com",
+                "expected_full_url": "http://php.dev-faq.com",
             },
             {
                 "scheme": "http",
-                "host": "php.devfaq.com",
+                "host": "php.dev-faq.com",
                 "expected_subdomain": "php",
-                "expected_hostname": "devfaq.com",
+                "expected_hostname": "dev-faq.com",
                 "expected_port": 80,
-                "expected_full_url": "http://php.devfaq.com",
+                "expected_full_url": "http://php.dev-faq.com",
             },
             {
                 "scheme": "http",
-                "host": "devfaq.com:8080",
+                "host": "dev-faq.com:8080",
                 "expected_subdomain": "",
-                "expected_hostname": "devfaq.com",
+                "expected_hostname": "dev-faq.com",
                 "expected_port": 8080,
-                "expected_full_url": "http://devfaq.com:8080",
+                "expected_full_url": "http://dev-faq.com:8080",
             },
             {
                 "scheme": "http",

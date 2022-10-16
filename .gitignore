@@ -1,6 +1,5 @@
-monzo.json
-
 .idea/
+static/logos/*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

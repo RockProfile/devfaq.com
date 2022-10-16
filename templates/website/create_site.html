@@ -1,0 +1,20 @@
+{% extends "website/main.html" %}
+{% load static %}
+{% block content %}
+  {% if user.is_active %}
+    <form method="post" enctype="multipart/form-data" hx-post="/create_site" hx-headers='{"accept": "application/json"}'>
+      {% if FORM.errors %}
+        <ul>
+          {% for error_message in FORM.error_messages %}
+            <li>{{ error_message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% csrf_token %}
+      {{ FORM }}
+      <button class="btn btn-primary" type="submit" id="submit_form">Create Site</button>
+    </form>
+  {% else %}
+    Please register an account
+  {% endif %}
+{% endblock %}

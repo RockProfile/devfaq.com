@@ -6,6 +6,10 @@ services:
       POSTGRES_USER: 'admin'
       POSTGRES_PASSWORD: 'password123'
       POSTGRES_DB: 'django'
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
 
   mailtrap:
     image: eaudeweb/mailtrap
@@ -35,7 +39,7 @@ services:
       DJANGO_EMAIL_HOST: 'mailtrap'
       DJANGO_EMAIL_PORT: 25
     volumes:
-      - ../:/site/
+      - ./:/site/
     expose:
       - 8080
       - 443

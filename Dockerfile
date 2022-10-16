@@ -6,10 +6,12 @@ RUN apt-get update && \
 
 WORKDIR /site
 
-COPY run /usr/bin/run
+COPY dev/run /usr/bin/run
+
+COPY requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt
+
 RUN chmod +x /usr/bin/run
-RUN pip install "django"
-RUN pip install "python-dotenv"
-RUN pip install "psycopg2"
 
 EXPOSE 8080

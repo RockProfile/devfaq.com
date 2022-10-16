@@ -1,3 +1,6 @@
 Django
+django-cleanup
+django-debug-toolbar
+Pillow
 psycopg2
 python-dotenv

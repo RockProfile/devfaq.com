@@ -1,9 +1,12 @@
 """Helper functions and classes."""
+import os
 from dataclasses import dataclass
+from pathlib import Path
 
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
+from PIL import Image
 
 from devfaq.settings import ALLOWED_HOSTS
 from website.models import PermissionManagement
@@ -52,6 +55,58 @@ def delete_permissions(subdomain: str):
         content_type=content_type,
         codename__in=(f"{subdomain}_contributor", f"{subdomain}_owner"),
     ).delete()
+
+
+def resize_image(
+    image: Path, new_name: str = "", max_width: int = 0, max_height: int = 0
+) -> Path:
+    """
+    Resize the given image.
+
+    Args:
+        image: Path and name of the image to resize
+        new_name: New name for the image, if left blank the image is overwritten
+        max_width: The maximum width for the new image
+        max_height: The maximum height for the new image
+
+    Returns:
+        Path of the new image
+    """
+    if not new_name:
+        new_image = image
+    else:
+        new_image = image.parent.joinpath(new_name)
+
+    with Image.open(image) as img_h:
+        image_width: int = img_h.width
+        image_height: int = img_h.height
+        if not max_height:
+            max_height = image_height
+        if not max_width:
+            max_width = image_width
+
+        if image_height <= max_height and image_width <= max_width:
+            return image
+
+        if max_height and image_height > max_height:
+            ratio = image_height / max_height
+            image_height = int(image_height / ratio)
+            image_width = int(image_width / ratio)
+
+        if max_width and image_width > max_width:
+            ratio = image_width / max_width
+            image_height = int(image_height / ratio)
+            image_width = int(image_width / ratio)
+
+        new_size = (image_width, image_height)
+
+        new_image_obj = img_h.resize(size=new_size)
+        new_image_obj.save(fp=new_image)
+
+    if new_image != image:
+        os.remove(image)
+
+    return new_image
 
 
 def user_add_permissions(user: User, subdomain: str, permissions: list[str]):

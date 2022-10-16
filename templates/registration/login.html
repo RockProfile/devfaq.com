@@ -1,9 +1,13 @@
-{% if user.is_authenticated %}
-  <p>You are already logged in, no need to log in again.</p>
-{% else %}
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log In</button>
-  </form>
-{% endif %}
+{% extends "website/main.html" %}
+{% load static %}
+{% block content %}
+  {% if user.is_authenticated %}
+    <p>You are already logged in, no need to log in again.</p>
+  {% else %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn btn-primary" type="submit" id="submit_form">Log In</button>
+    </form>
+  {% endif %}
+{% endblock %}

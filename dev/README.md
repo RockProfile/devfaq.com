@@ -8,7 +8,6 @@ to get up and running first install Docker, the easiest way to do this on a Wind
 Once installed and started run the following command:
 
 ```shell
-cd dev
 docker-compose up
 ```
 
@@ -16,7 +15,7 @@ docker-compose up
 
 * Creation of a default superuser
 * Using a proper webserver
-* Pre populate the database with data
+* Pre-populate the database with data
 
 ## FAQ
 

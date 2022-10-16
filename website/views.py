@@ -140,14 +140,14 @@ def process_form(
     if form.is_valid():
         form.save()
         for accepted_type in request.accepted_types:
-            if "application/json" == str(accepted_type):
+            if str(accepted_type) == "application/json":
                 response = process_json_success(redirect_url=redirect_url)
                 break
         if not response:
             response = redirect(redirect_url)
     else:
         for accepted_type in request.accepted_types:
-            if "application/json" == str(accepted_type):
+            if str(accepted_type) == "application/json":
                 response = process_json_failure(form.errors.as_data())
                 break
 
@@ -179,9 +179,7 @@ def process_json_failure(form_errors: dict[str, list[ValidationError]]) -> JsonR
     for field, errors in form_errors.items():
         if field == "__all__":
             field = "non_field"
-        error_list: list[str] = []
-        for error in errors:
-            error_list.append(error.message)
+        error_list: list[str] = [error.message for error in errors]
         json_response["errors"][field] = error_list
     return JsonResponse(json_response)
 

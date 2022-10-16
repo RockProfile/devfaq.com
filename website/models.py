@@ -18,8 +18,7 @@ def logo_file_name(instance: "Site", filename: str) -> str:
     """
     path: str = "static/logos/"
     ext: str = filename.split(".")[-1]
-    new_filename: str = f"{path}{instance.subdomain}.{ext}"
-    return new_filename
+    return f"{path}{instance.subdomain}.{ext}"
 
 
 class BiographyModel(models.Model):

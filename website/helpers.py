@@ -72,11 +72,7 @@ def resize_image(
     Returns:
         Path of the new image
     """
-    if not new_name:
-        new_image = image
-    else:
-        new_image = image.parent.joinpath(new_name)
-
+    new_image = image.parent.joinpath(new_name) if new_name else image
     with Image.open(image) as img_h:
         image_width: int = img_h.width
         image_height: int = img_h.height

@@ -1,0 +1,14 @@
+<form method="POST" hx-post="/register" hx-headers='{"accept": "application/json"}'>
+  {% if FORM.errors  %}
+    <ul>
+      {% for error_message in FORM.error_messages %}
+        <li>{{ error_message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% csrf_token %}
+  <table>
+    {{ FORM.as_table }}
+  </table>
+  <button class="btn btn-primary" type="submit" id="submit_form">Register</button>
+</form>

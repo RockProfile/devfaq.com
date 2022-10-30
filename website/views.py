@@ -4,7 +4,7 @@ import string
 from pathlib import Path
 from typing import TypedDict, Union
 
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -116,7 +116,18 @@ def index(request) -> HttpResponse:
     Return:
         HttpResponse for the index page
     """
-    context = {"SUBDOMAIN": get_host_details(request=request).subdomain}
+    context = {
+        "SUBDOMAIN": get_host_details(request=request).subdomain,
+        "USER_SITES": [],
+    }
+    if request.user.is_authenticated:
+        user_permissions = request.user.user_permissions.all()
+        if user_permissions:
+            user_sites: list[str] = []
+            for user_permission in user_permissions:
+                user_permission_split = user_permission.codename.split("_")
+                user_sites.append(user_permission_split[0])
+            context["USER_SITES"] = user_sites
     return render(request, "website/index.html", context=context)
 
 
@@ -217,9 +228,7 @@ def register(request) -> HttpResponse:
     context: dict[str, Union[CustomUserCreationForm, str]] = {}
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
-        valid, response = process_form(
-            form=form, request=request, redirect_url="/user_cp"
-        )
+        valid, response = process_form(form=form, request=request, redirect_url="/")
         if valid:
             user = form.save()
             login(request, user)
@@ -257,6 +266,140 @@ def register(request) -> HttpResponse:
     context["FORM"] = form
     return render(
         request=request, template_name="registration/register.html", context=context
+    )
+
+
+def register_form(request) -> HttpResponse:
+    """
+    Handle the registration process.
+
+    Args:
+        request: HttpRequest object
+
+    Return:
+        HttpResponse for the registration page
+    """
+    context: dict[str, Union[CustomUserCreationForm, str]] = {}
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        valid, response = process_form(form=form, request=request, redirect_url="/")
+        if valid:
+            user = form.save()
+            login(request, user)
+            validation_string = "".join(
+                random.SystemRandom().choice(string.ascii_uppercase + string.digits)
+                for _ in range(64)
+            )
+            user_validation = Validation(
+                user=user, random_validation_string=validation_string
+            )
+            user_validation.save()
+
+            host_details = get_host_details(request=request)
+
+            subject: str = "Thank you for registering with devfaq"
+            validate_url = f"{host_details.full_url}/validate?token={validation_string}"
+            context = {
+                "SITE_NAME": host_details.hostname,
+                "VALIDATE_URL": validate_url,
+            }
+            message: str = render_to_string(
+                template_name="email/registration.txt",
+                context=context,
+            )
+            send_site_email(
+                sender="no-reply@devfaq.com",
+                recipient=user.email,
+                subject=subject,
+                message=message,
+            )
+        return response
+    else:
+        form = CustomUserCreationForm()
+
+    context["FORM"] = form
+    return render(
+        request=request,
+        template_name="registration/partials/register_form.html",
+        context=context,
+    )
+
+
+def custom_login(request) -> HttpResponse:
+    """
+    Handle the login process.
+
+    Args:
+        request: HttpRequest object
+
+    Return:
+        HttpResponse for the registration page
+    """
+    # TODO update to adhere to the cvontent type header as register does
+    context: dict[str, Union[CustomUserCreationForm, str]] = {}
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            json_success_response = {
+                "result": "success",
+                "redirect": True,
+                "redirect_url": "/",
+            }
+            return JsonResponse(json_success_response)
+        else:
+            json_failure_response: JSONFailureResponse = {
+                "result": "failed",
+                "errors": {
+                    "__all__": ["Login Failed"],
+                },
+            }
+            return JsonResponse(json_failure_response)
+
+    return render(
+        request=request, template_name="registration/register.html", context=context
+    )
+
+
+def login_form(request) -> HttpResponse:
+    """
+    Handle the login process.
+
+    Args:
+        request: HttpRequest object
+
+    Return:
+        HttpResponse for the login page
+    """
+    # TODO update to adhere to the cvontent type header as register does
+    context: dict[str, Union[CustomUserCreationForm, str]] = {}
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            json_success_response = {
+                "result": "success",
+                "redirect": True,
+                "redirect_url": "/",
+            }
+            return JsonResponse(json_success_response)
+        else:
+            json_failure_response: JSONFailureResponse = {
+                "result": "failed",
+                "errors": {
+                    "__all__": ["Login Failed"],
+                },
+            }
+            return JsonResponse(json_failure_response)
+
+    return render(
+        request=request,
+        template_name="registration/partials/login_form.html",
+        context=context,
     )
 
 

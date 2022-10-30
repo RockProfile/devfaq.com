@@ -1,14 +1,19 @@
-<html>
-  <head>
-    <link rel="stylesheet" href="/static/css/devfaq.css">
-    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.css">
-    <script type="application/javascript" src="/static/js/bootstrap/bootstrap.bundle.js"></script>
-    <script type="application/javascript" src="/static/js/htmx.min.js"></script>
-  </head>
-  <body>
-    {% block content %}Wow content is missing{% endblock %}
-
-    <script type="application/javascript" src="/static/js/devfaq.js"></script>
-
-  </body>
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/css/devfaq.css">
+  <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.css">
+  <script type="text/javascript" src="/static/js/bootstrap/bootstrap.bundle.js"></script>
+  <script type="text/javascript" src="/static/js/htmx.min.js"></script>
+  <title>{% block title %}DevFAQ{% endblock %}</title>
+</head>
+<body>
+  <div class="content">
+    <div class="row">
+      {% block content %}Wow content is missing{% endblock %}
+    </div>
+    <script type="text/javascript" src="/static/js/devfaq.js"></script>
+  </div>
+</body>
 </html>

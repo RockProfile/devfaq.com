@@ -1,8 +1,9 @@
 """Views for the website."""
+
 import random
 import string
 from pathlib import Path
-from typing import TypedDict, Union
+from typing import TypedDict
 
 from django.contrib.auth import login
 from django.contrib.auth.models import User
@@ -22,7 +23,7 @@ from website.helpers import (
 from website.models import Site, Validation
 
 
-def create_site(request) -> Union[HttpResponse, JsonResponse]:
+def create_site(request) -> HttpResponse | JsonResponse:
     """
     Handle the creation site functionality.
 
@@ -90,7 +91,7 @@ def email_validation(request) -> HttpResponse:
         )
 
     try:
-        user = User.objects.get(validation__random_validation_string=token)
+        user: User = User.objects.get(validation__random_validation_string=token)
     except User.DoesNotExist:
         context = {
             "ERROR": "Invalid token",
@@ -122,7 +123,7 @@ def index(request) -> HttpResponse:
 
 def process_form(
     form, request, redirect_url: str
-) -> tuple[bool, Union[HttpResponse, JsonResponse, HttpResponseRedirect]]:
+) -> tuple[bool, HttpResponse | JsonResponse | HttpResponseRedirect]:
     """
     Process a form to identify errors and identify output required.
 
@@ -134,7 +135,7 @@ def process_form(
     Returns:
         Response to be provided to the user based on the result of validation
     """
-    response: Union[HttpResponse, JsonResponse, HttpResponseRedirect] = HttpResponse(
+    response: HttpResponse | JsonResponse | HttpResponseRedirect = HttpResponse(
         "Invalid request"
     )
     if form.is_valid():
@@ -181,7 +182,7 @@ def process_json_failure(form_errors: dict[str, list[ValidationError]]) -> JsonR
             field = "non_field"
         error_list: list[str] = []
         for error in errors:
-            error_list.append(error.message)
+            error_list.append(str(error.message))
         json_response["errors"][field] = error_list
     return JsonResponse(json_response)
 
@@ -214,7 +215,7 @@ def register(request) -> HttpResponse:
     Return:
         HttpResponse for the registration page
     """
-    context: dict[str, Union[CustomUserCreationForm, str]] = {}
+    context: dict[str, CustomUserCreationForm | str] = {}
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         valid, response = process_form(

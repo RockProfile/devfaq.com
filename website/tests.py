@@ -1,4 +1,5 @@
 """Tests for the website."""
+
 from django.test import TestCase
 
 from devfaq.settings import BASE_DIR

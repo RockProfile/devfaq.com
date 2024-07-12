@@ -1,4 +1,5 @@
 """Helper functions and classes."""
+
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -164,7 +165,7 @@ def get_host_details(request) -> HostDetails:
     host_details = HostDetails()
     host_details.scheme = request.scheme
     try:
-        hostname = request.META["HTTP_HOST"]
+        hostname = request.get_host()
     except KeyError:
         return host_details
 

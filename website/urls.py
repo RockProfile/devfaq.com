@@ -1,4 +1,5 @@
 """URL configuration for the network application."""
+
 from django.urls import include, path
 
 from website import views

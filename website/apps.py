@@ -1,4 +1,5 @@
 """App config for the website."""
+
 from django.apps import AppConfig
 
 

@@ -1,4 +1,5 @@
 """Tests for the website."""
+
 from django.test import TestCase
 
 from devfaq.settings import BASE_DIR
@@ -32,6 +33,11 @@ class Request:
     def scheme(self, scheme: str):
         """Mock the scheme."""
         self._scheme = scheme
+
+    def get_host(self) -> str:
+        """Mock the get_host method."""
+        # TODO fix so that this is actually using the behaviour of the real method
+        return self.META["HTTP_HOST"]
 
 
 class SubdomainTests(TestCase):

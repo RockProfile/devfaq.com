@@ -43,12 +43,11 @@ if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + [
         "127.0.0.1",
-        "10.0.2.2",
     ]
 
 allowed_host_env = os.getenv(
     "DJANGO_ALLOWED_HOST",
-    "127.0.0.1",
+    "localhost",
 )
 
 ALLOWED_HOSTS: list[str] = [allowed_host_env]

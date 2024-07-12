@@ -47,7 +47,7 @@ if DEBUG:
 
 allowed_host_env = os.getenv(
     "DJANGO_ALLOWED_HOST",
-    "127.0.0.1",
+    "localhost",
 )
 
 ALLOWED_HOSTS: list[str] = [allowed_host_env]

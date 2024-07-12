@@ -34,6 +34,11 @@ class Request:
         """Mock the scheme."""
         self._scheme = scheme
 
+    def get_host(self) -> str:
+        """Mock the get_host method."""
+        # TODO fix so that this is actually using the behaviour of the real method
+        return self.META["HTTP_HOST"]
+
 
 class SubdomainTests(TestCase):
     """Tests to validate subdomain functionality."""

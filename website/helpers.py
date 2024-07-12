@@ -165,7 +165,7 @@ def get_host_details(request) -> HostDetails:
     host_details = HostDetails()
     host_details.scheme = request.scheme
     try:
-        hostname = request.headers["host"]
+        hostname = request.get_host()
     except KeyError:
         return host_details
 

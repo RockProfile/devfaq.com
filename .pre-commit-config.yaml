@@ -6,7 +6,7 @@ exclude: '^(static\/css\/bootstrap\/.(.+)|static\/js\/bootstrap\/.(.+)|(.+)/migr
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -30,21 +30,21 @@ repos:
         name: curlylint
 
   - repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.15.0
+    rev: 1.19.0
     hooks:
       - id: django-upgrade
         name: django-upgrade
-        args: [--target-version, "4.0"]
+        args: [ --target-version, "5.0" ]
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
         name: pyupgrade
-        args: [--py312-plus]
+        args: [ --py311-plus ]
 
   - repo: https://github.com/psf/black
-    rev: 24.1.1
+    rev: 24.4.2
     hooks:
       - id: black
         name: black
@@ -56,7 +56,7 @@ repos:
         name: isort
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
       - id: flake8
         name: flake8
@@ -67,7 +67,7 @@ repos:
           - flake8-docstrings
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.8.0'
+    rev: 'v1.10.1'
     hooks:
       - id: mypy
         name: mypy

@@ -1,5 +1,6 @@
 {% extends "website/main.html" %}
 {% load static %}
+{% block title %}User Control Panel - {% endblock %}
 {% block content %}
   {% if user.is_active %}
     <a href="/create_site">Create Site</a>

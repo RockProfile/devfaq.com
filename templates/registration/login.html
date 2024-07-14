@@ -1,13 +1,10 @@
 {% extends "website/main.html" %}
 {% load static %}
+{% block title %}Login - {% endblock %}
 {% block content %}
   {% if user.is_authenticated %}
     <p>You are already logged in, no need to log in again.</p>
   {% else %}
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button class="btn btn-primary" type="submit" id="submit_form">Log In</button>
-    </form>
+    {% include "registration/partials/login_form.html" %}
   {% endif %}
 {% endblock %}

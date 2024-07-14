@@ -5,12 +5,13 @@ import string
 from pathlib import Path
 from typing import TypedDict
 
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.views.generic import TemplateView
 
 from website.forms import CreateSite, CustomUserCreationForm
 from website.helpers import (
@@ -21,6 +22,124 @@ from website.helpers import (
     user_add_permissions,
 )
 from website.models import Site, Validation
+
+
+class IndexView(TemplateView):
+    """Index View."""
+
+    template_name = "website/index.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Get the index page.
+
+        Args:
+            kwargs: Keyword arguments
+
+        Returns: website/index.html with context
+        """
+        context = super().get_context_data(**kwargs)
+        context["SUBDOMAIN"] = get_host_details(request=self.request).subdomain
+        context["USER_SITES"] = []
+
+        if self.request.user.is_authenticated:
+            user_permissions = self.request.user.user_permissions.all()
+            if user_permissions:
+                user_sites: list[str] = []
+                for user_permission in user_permissions:
+                    user_permission_split = user_permission.codename.split("_")
+                    user_sites.append(user_permission_split[0])
+                context["USER_SITES"] = user_sites
+        return context
+
+
+class RegisterView(TemplateView):
+    """Register View."""
+
+    template_name = "registration/register.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Get the registration page.
+
+        Args:
+            kwargs: Keyword arguments
+
+        Returns: registration/register.html with context
+        """
+        context = super().get_context_data(**kwargs)
+        context["FORM"] = CustomUserCreationForm()
+        return context
+
+    def post(self, request) -> HttpResponse:
+        """
+        Handle the registration process.
+
+        Args:
+            request: HttpRequest object
+
+        Return:
+            HttpResponse for the registration page
+        """
+        form = CustomUserCreationForm(request.POST)
+        valid, response = process_form(
+            form=form, request=request, redirect_url="/user_cp"
+        )
+        if valid:
+            user = form.save()
+            login(request, user)
+            validation_string = "".join(
+                random.SystemRandom().choice(string.ascii_uppercase + string.digits)
+                for _ in range(64)
+            )
+            user_validation = Validation(
+                user=user, random_validation_string=validation_string
+            )
+            user_validation.save()
+
+            host_details = get_host_details(request=request)
+
+            subject: str = "Thank you for registering with devfaq"
+            validate_url = f"{host_details.full_url}/validate?token={validation_string}"
+            context = {
+                "SITE_NAME": host_details.hostname,
+                "VALIDATE_URL": validate_url,
+            }
+            message: str = render_to_string(
+                template_name="email/registration.txt",
+                context=context,
+            )
+            send_site_email(
+                sender="no-reply@devfaq.com",
+                recipient=user.email,
+                subject=subject,
+                message=message,
+            )
+        return response
+
+
+class UserCpView(TemplateView):
+    """User Control Panel View."""
+
+    template_name = "website/user_cp.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Get the user control panel.
+
+        Args:
+            kwargs: Keyword arguments
+
+        Returns: website/user_cp.html with context
+        """
+        if not self.request.user.is_authenticated:
+            return redirect("/accounts/login")
+
+        context = super().get_context_data(**kwargs)
+        sites = Site.objects.all()
+        for site in sites:
+            print(site.logo)
+        return context
 
 
 def create_site(request) -> HttpResponse | JsonResponse:
@@ -107,20 +226,6 @@ def email_validation(request) -> HttpResponse:
     return redirect("/user_cp")
 
 
-def index(request) -> HttpResponse:
-    """
-    Handle the Index page.
-
-    Args:
-        request: HttpRequest object
-
-    Return:
-        HttpResponse for the index page
-    """
-    context = {"SUBDOMAIN": get_host_details(request=request).subdomain}
-    return render(request, "website/index.html", context=context)
-
-
 def process_form(
     form, request, redirect_url: str
 ) -> tuple[bool, HttpResponse | JsonResponse | HttpResponseRedirect]:
@@ -205,76 +310,77 @@ def process_json_success(redirect_url: str) -> JsonResponse:
     return JsonResponse(json_response)
 
 
-def register(request) -> HttpResponse:
+def login_form(request) -> HttpResponse:
     """
-    Handle the registration process.
+    Handle the login process.
 
     Args:
         request: HttpRequest object
-
     Return:
-        HttpResponse for the registration page
+        HttpResponse for the login page
     """
+    # TODO update to adhere to the cvontent type header as register does
     context: dict[str, CustomUserCreationForm | str] = {}
     if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
-        valid, response = process_form(
-            form=form, request=request, redirect_url="/user_cp"
-        )
-        if valid:
-            user = form.save()
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
             login(request, user)
-            validation_string = "".join(
-                random.SystemRandom().choice(string.ascii_uppercase + string.digits)
-                for _ in range(64)
-            )
-            user_validation = Validation(
-                user=user, random_validation_string=validation_string
-            )
-            user_validation.save()
-
-            host_details = get_host_details(request=request)
-
-            subject: str = "Thank you for registering with devfaq"
-            validate_url = f"{host_details.full_url}/validate?token={validation_string}"
-            context = {
-                "SITE_NAME": host_details.hostname,
-                "VALIDATE_URL": validate_url,
+            json_success_response = {
+                "result": "success",
+                "redirect": True,
+                "redirect_url": "/",
             }
-            message: str = render_to_string(
-                template_name="email/registration.txt",
-                context=context,
-            )
-            send_site_email(
-                sender="no-reply@devfaq.com",
-                recipient=user.email,
-                subject=subject,
-                message=message,
-            )
-        return response
-    else:
-        form = CustomUserCreationForm()
+            return JsonResponse(json_success_response)
+        else:
+            json_failure_response: JSONFailureResponse = {
+                "result": "failed",
+                "errors": {
+                    "__all__": ["Login Failed"],
+                },
+            }
+            return JsonResponse(json_failure_response)
 
-    context["FORM"] = form
     return render(
-        request=request, template_name="registration/register.html", context=context
+        request=request,
+        template_name="registration/partials/login_form.html",
+        context=context,
     )
 
 
-def user_cp(request) -> HttpResponse:
+def custom_login(request) -> HttpResponse:
     """
-    Handle the user control panel.
+    Handle the login process.
 
     Args:
         request: HttpRequest object
-
     Return:
-        HttpResponse for the user control panel page
+        HttpResponse for the registration page
     """
-    if not request.user.is_authenticated:
-        return redirect("/accounts/login")
+    # TODO update to adhere to the cvontent type header as register does
+    context: dict[str, CustomUserCreationForm | str] = {}
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            json_success_response = {
+                "result": "success",
+                "redirect": True,
+                "redirect_url": "/",
+            }
+            return JsonResponse(json_success_response)
+        else:
+            json_failure_response: JSONFailureResponse = {
+                "result": "failed",
+                "errors": {
+                    "__all__": ["Login Failed"],
+                },
+            }
+            return JsonResponse(json_failure_response)
 
-    sites = Site.objects.all()
-    for site in sites:
-        print(site.logo)
-    return render(request=request, template_name="website/user_cp.html")
+    return render(
+        request=request, template_name="registration/register.html", context=context
+    )

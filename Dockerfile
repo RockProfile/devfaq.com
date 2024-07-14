@@ -14,4 +14,6 @@ RUN pip install -r requirements.txt
 
 RUN chmod +x /usr/bin/run
 
+CMD ["/usr/bin/run"]
+
 EXPOSE 8080

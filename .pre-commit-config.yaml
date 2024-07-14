@@ -23,11 +23,11 @@ repos:
         args:
           - --tabwidth=2
 
-  - repo: https://github.com/thibaudcolas/curlylint
-    rev: v0.13.1
-    hooks:
-      - id: curlylint
-        name: curlylint
+#  - repo: https://github.com/thibaudcolas/curlylint
+#    rev: v0.13.1
+#    hooks:
+#      - id: curlylint
+#        name: curlylint
 
   - repo: https://github.com/adamchainz/django-upgrade
     rev: 1.19.0

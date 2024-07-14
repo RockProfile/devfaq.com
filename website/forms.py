@@ -26,6 +26,7 @@ class CreateSite(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name in ("subdomain", "description", "logo"):
             self.fields[field_name].help_text = None
+            self.fields[field_name].widget.attrs.update({"class": "form-control"})
 
     class Meta:
         """Override the fields that are required."""
@@ -72,6 +73,7 @@ class CustomUserCreationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         for field_name in ("username", "email", "password1", "password2"):
             self.fields[field_name].help_text = None
+            self.fields[field_name].widget.attrs.update({"class": "form-control"})
 
     def clean(self):
         """

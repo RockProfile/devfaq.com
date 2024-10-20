@@ -142,6 +142,32 @@ class UserCpView(TemplateView):
         return context
 
 
+class ManageSiteView(TemplateView):
+    """Manage Site."""
+
+    template_name = "website/manage_site.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Get the site details.
+
+        Args:
+            kwargs: Keyword arguments
+
+        Returns: website/manage_site.html with context
+        """
+        if not self.request.user.is_authenticated:
+            return redirect("/accounts/login")
+
+        context = super().get_context_data(**kwargs)
+        site = Site.objects.filter(subdomain=kwargs["site"])
+        if len(site) == 0:
+            return redirect("/create_site")
+        # TODO Check user has permissions
+        context["sites"] = site
+        return context
+
+
 def create_site(request) -> HttpResponse | JsonResponse:
     """
     Handle the creation site functionality.
@@ -319,7 +345,7 @@ def login_form(request) -> HttpResponse:
     Return:
         HttpResponse for the login page
     """
-    # TODO update to adhere to the cvontent type header as register does
+    # TODO update to adhere to the content type header as register does
     context: dict[str, CustomUserCreationForm | str] = {}
     if request.method == "POST":
         username = request.POST["username"]
@@ -358,7 +384,7 @@ def custom_login(request) -> HttpResponse:
     Return:
         HttpResponse for the registration page
     """
-    # TODO update to adhere to the cvontent type header as register does
+    # TODO update to adhere to the content type header as register does
     context: dict[str, CustomUserCreationForm | str] = {}
     if request.method == "POST":
         username = request.POST["username"]

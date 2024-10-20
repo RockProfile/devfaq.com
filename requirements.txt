@@ -1,4 +1,4 @@
-Django
+Django==5.1.1
 django-cleanup
 django-debug-toolbar
 Pillow

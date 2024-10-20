@@ -31,9 +31,18 @@ def subdomain_validator(subdomain: str):
     Raises:
         ValidationError: On validation issue
     """
-    regex = r"^[a-zA-Z][a-zA-Z0-9-]+[a-zA-Z0-9]$"
+    reserved_words = (
+        "admin" "usercp",
+        "www",
+    )
+    if subdomain in reserved_words:
+        raise ValidationError(
+            "The requested subdomain is invalid, the subdomain is reserved."
+        )
+
+    regex = r"^[a-zA-Z0-9]([a-zA-Z0-9-]+[a-zA-Z0-9])?([a-zA-Z0-9])?$"
     if not match(regex, subdomain):
         raise ValidationError(
             "The requested subdomain is invalid, "
-            "it must start and end with a letter and only contain letters numbers and hyphens"
+            "it must start and end with a letter or number and only contain letters numbers and hyphens."
         )

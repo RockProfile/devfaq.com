@@ -1,0 +1,4 @@
+isort
+model-bakery
+mypy
+selenium

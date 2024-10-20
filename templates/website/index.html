@@ -9,30 +9,30 @@
       {% if user.is_authenticated %}
         <header>Links</header>
         <ul>
-          <li><a href="/create_site">Create A Site</a>
-            {% if USER_SITES %}
-              <ul>
-                {% for USER_SITE in USER_SITES %}
-                  <li><a href="/manage_site/{{ USER_SITE }}">Manage {{ USER_SITE }}</a> </li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </li>
-          <li><a href="/accounts/logout">Logout</a></li>
-        </ul>
-      {% else %}
-        <div id="tabs" hx-target="#tab-contents" _="on htmx:afterOnLoad take .selected for event.target">
-          <a hx-get="/login_form" class="selected">Login</a>
-          <a hx-get="/register_form">Register</a>
-        </div>
-        <div id="tab-contents" hx-get="/login_form" hx-trigger="load"></div>
-      {% endif %}
-    </aside>
-    <aside>
-      <header>Links</header>
-      <ul>
-        <li><a href="/directory">Directory</a></li>
-      </ul>
-    </aside>
-  </div>
-{% endblock %}
+          <li><a href=""{% url 'website:create_site' %}">Create A Site</a>
+                                                        {% if USER_SITES %}
+                                                        <ul>
+                                                        {% for USER_SITE in USER_SITES %}
+                                                        <li><a href="/manage_site/{{ USER_SITE }}">Manage {{ USER_SITE }}</a> </li>
+                                                                                                                 {% endfor %}
+                                                                                                                   </ul>
+                                                                                                                 {% endif %}
+                                                                                                                   </li>
+                                                                                                                   <li><a href="/accounts/logout">Logout</a></li>
+                                                                                                                                                                  </ul>
+                                                                                                                                                            {% else %}
+                                                                                                                                                              <div id="tabs" hx-target="#tab-contents" _="on htmx:afterOnLoad take .selected for event.target">
+                                                                                                                                                                                                                                                                           <a hx-get="{% url 'website:login_form' %}" class="selected">Login</a>
+                                                                                                                                                                                                                                                                                                                                                   <a href="{% url 'website:register' %}">Register</a>
+                                                                                                                                                                                                                                                                                                                                                                                                      </div>
+                                                                                                                                                                                                                                                                                                                                                                                                      <div id="tab-contents" hx-get="/login_form" hx-trigger="load"></div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                              {% endif %}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </aside>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <aside>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <header>Links</header>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <ul>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <li><a href="{% url 'website:directory' %}">Directory</a></li>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </ul>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </aside>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {% endblock %}

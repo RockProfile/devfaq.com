@@ -1,9 +1,9 @@
 {% extends "website/main.html" %}
 {% load static %}
-{% block title %}User Control Panel - {% endblock %}
+{% block title %}Manage {site} - {% endblock %}
 {% block content %}
   {% if user.is_active %}
-    <a href="{% url 'website:create_site' %}">Create Site</a>
+    Site details
   {% else %}
     Please activate your account by clicking the link we have sent you.
   {% endif %}

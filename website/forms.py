@@ -71,6 +71,7 @@ class CustomUserCreationForm(UserCreationForm):
             kwargs: Keyword arguments
         """
         super().__init__(*args, **kwargs)
+        # self.fields.pop("usable_password")
         for field_name in ("username", "email", "password1", "password2"):
             self.fields[field_name].help_text = None
             self.fields[field_name].widget.attrs.update({"class": "form-control"})
@@ -104,3 +105,58 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class PluginBaseForm(forms.ModelForm):
+    """Base form for plugins."""
+
+    author = forms.ModelChoiceField(queryset=User.objects.all())
+    draft = forms.BooleanField(required=False)
+    published_on = forms.DateField()
+
+
+class ArticlePluginForm(PluginBaseForm):
+    """Form to handle interactions for the Article plugin."""
+
+    title = forms.CharField(required=True, max_length=100)
+    text = forms.CharField(widget=forms.Textarea, required=True, max_length=1000)
+
+
+class FAQPluginForm(PluginBaseForm):
+    """Form to handle interactions for the FAQ plugin."""
+
+    question = forms.CharField(required=True, max_length=100)
+    answer = forms.CharField(required=True, max_length=500)
+
+
+class FeaturedFunctionPluginForm(PluginBaseForm):
+    """Form to handle interactions for the Featured Function plugin."""
+
+    name = forms.CharField(required=True, max_length=100)
+    documentation = forms.URLField(required=True)
+    description = forms.CharField(widget=forms.Textarea, required=True, max_length=1000)
+
+
+class FeaturedPackagePluginForm(PluginBaseForm):
+    """Form to handle interactions for the Featured Package plugin."""
+
+    name = forms.CharField(required=True, max_length=100)
+    download = forms.URLField(required=True)
+    documentation = forms.URLField(required=True)
+    description = forms.CharField(widget=forms.Textarea, required=True, max_length=1000)
+
+
+class NewsPluginForm(PluginBaseForm):
+    """Form to handle interactions for the News plugin."""
+
+    title = forms.CharField(required=True, max_length=100)
+    text = forms.CharField(widget=forms.Textarea, required=True, max_length=1000)
+
+
+PLUGIN_FORMS = {
+    "article": ArticlePluginForm,
+    "faq": FAQPluginForm,
+    "featured_function": FeaturedFunctionPluginForm,
+    "featured_package": FeaturedPackagePluginForm,
+    "news": NewsPluginForm,
+}

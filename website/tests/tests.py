@@ -1,9 +1,10 @@
 """Tests for the website."""
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from devfaq.settings import BASE_DIR
-from website import helpers
+from website import helpers, validators
 
 DATABASES = {
     "default": {
@@ -166,3 +167,28 @@ class SubdomainTests(TestCase):
                 calculated_host_details.full_url, host_detail["expected_full_url"]
             )
             self.assertEqual(calculated_host_details.port, host_detail["expected_port"])
+
+    def test_subdomain_validator(self):
+        """Test the subdomain validator."""
+        subdomains = (
+            ("0", True),
+            ("1", True),
+            ("99", True),
+            ("a", True),
+            ("a-b", True),
+            ("ab", True),
+            ("php", True),
+            ("python", True),
+            ("python-", False),
+            ("python3", True),
+            ("python3.11", False),
+        )
+        for subdomain in subdomains:
+            try:
+                validators.subdomain_validator(subdomain[0])
+            except ValidationError:
+                assert not subdomain[
+                    1
+                ], f'"{subdomain[0]}" failed to validate as a valid subdomain.'
+            else:
+                assert subdomain[1], f'"{subdomain[0]}" validated when it shouldnt.'

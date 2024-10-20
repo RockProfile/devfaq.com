@@ -3,7 +3,7 @@
 {% block title %}Create Site - {% endblock %}
 {% block content %}
   {% if user.is_active %}
-    <form method="post" enctype="multipart/form-data" hx-post="/create_site" hx-headers='{"accept": "application/json"}'>
+    <form method="post" enctype="multipart/form-data" hx-post="{% url 'website:create_site' %}" hx-headers='{"accept": "application/json"}'>
       {% if FORM.errors %}
         <ul>
           {% for error_message in FORM.error_messages %}

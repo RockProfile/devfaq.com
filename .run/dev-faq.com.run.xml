@@ -16,7 +16,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <option name="launchJavascriptDebuger" value="false" />
     <option name="port" value="8080" />
-    <option name="host" value="dev-faq.com" />
+    <option name="host" value="0.0.0.0" />
     <option name="additionalOptions" value="" />
     <option name="browserUrl" value="http://dev-faq.com:8080" />
     <option name="runTestServer" value="false" />

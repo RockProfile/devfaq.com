@@ -1,8 +1,8 @@
 # Devfaq.com Development
 
-This directory contains the relevant files to setup a working development environment.
+This directory contains the relevant files to set up a working development environment.
 
-to get up and running first install Docker, the easiest way to do this on a Windows machine is to install
+To get up and running, first install Docker, the easiest way to do this on a Windows or Mac machine is to install
 [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 Once installed and started run the following command:

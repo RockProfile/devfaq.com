@@ -3,7 +3,9 @@
 cd /site || exit
 
 pip install -r /site/requirements.txt
+pip install -r /site/requirements-dev.txt
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser --no-input
+
 python manage.py runserver 0.0.0.0:8080

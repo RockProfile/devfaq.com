@@ -104,23 +104,14 @@ WSGI_APPLICATION = "devfaq.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": str(os.getenv("DJANGO_DATABASE_HOST")),
+        "PORT": str(os.getenv("DJANGO_DATABASE_PORT")),
+        "NAME": str(os.getenv("DJANGO_DATABASE_NAME")),
+        "USER": str(os.getenv("DJANGO_DATABASE_USER")),
+        "PASSWORD": str(os.getenv("DJANGO_DATABASE_PASSWORD")),
+    },
 }
-
-if db_host := os.getenv("DJANGO_DATABASE_HOST", ""):
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "HOST": str(os.getenv("DJANGO_DATABASE_HOST")),
-            "PORT": str(os.getenv("DJANGO_DATABASE_PORT")),
-            "NAME": str(os.getenv("DJANGO_DATABASE_NAME")),
-            "USER": str(os.getenv("DJANGO_DATABASE_USER")),
-            "PASSWORD": str(os.getenv("DJANGO_DATABASE_PASSWORD")),
-        },
-    }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

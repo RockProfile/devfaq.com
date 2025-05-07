@@ -1,6 +1,6 @@
-Django
-django-cleanup
-django-debug-toolbar
-Pillow
-psycopg2
-python-dotenv
+Django==5.2.1
+django-cleanup==9.0.0
+django-debug-toolbar==5.2.0
+Pillow==11.2.1
+psycopg2==2.9.10
+python-dotenv==1.1.0

@@ -74,8 +74,8 @@ class Site(models.Model):
     )
     created_by: models.ForeignKey = models.ForeignKey(
         to=User,
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         on_delete=models.RESTRICT,
     )
 

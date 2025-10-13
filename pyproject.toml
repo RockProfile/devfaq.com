@@ -1,0 +1,33 @@
+[project]
+name = "devfaq-com"
+version = "0.1.0"
+description = "Devfaq, a site to answer those burning dev questions."
+requires-python = ">=3.14"
+dependencies = [
+    "django>=5.2.7",
+    "django-cleanup>=9.0.0",
+    "django-debug-toolbar>=6.0.0",
+    "pillow>=11.3.0",
+    "psycopg2>=2.9.11",
+    "python-dotenv>=1.1.1",
+]
+
+classifiers = [
+  "Framework :: Django",
+  "Framework :: Django :: 5.2",
+  "Framework :: Django :: 6",
+  "Framework :: Django :: 6.0",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-mypy-plugins>=3.2.0",
+    "ruff>=0.14.0",
+    "troml>=0.4.1",
+    "ty>=0.0.1a22",
+]

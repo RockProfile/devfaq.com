@@ -32,7 +32,7 @@ dev = [
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "pytest-mypy-plugins>=3.2.0",
-    "ruff>=v0.14.10",
+    "ruff>=0.14.10",
     "troml>=0.4.1",
     "ty>=0.0.6",
 ]

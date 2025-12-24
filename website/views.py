@@ -40,9 +40,7 @@ def create_site(request) -> HttpResponse | JsonResponse:
 
     if request.method == "POST":
         create_site_form = CreateSite(request.POST, request.FILES, user=request.user)
-        valid, response = process_form(
-            form=create_site_form, request=request, redirect_url="/user_cp"
-        )
+        valid, response = process_form(form=create_site_form, request=request, redirect_url="/user_cp")
         if valid:
             create_permissions(create_site_form.cleaned_data["subdomain"])
             user_add_permissions(
@@ -50,9 +48,7 @@ def create_site(request) -> HttpResponse | JsonResponse:
                 subdomain=create_site_form.cleaned_data["subdomain"],
                 permissions=["owner"],
             )
-            site = Site.objects.get(
-                subdomain=create_site_form.cleaned_data["subdomain"]
-            )
+            site = Site.objects.get(subdomain=create_site_form.cleaned_data["subdomain"])
             resized_logo = resize_image(
                 image=Path(site.logo.name),
                 new_name=f"{create_site_form.cleaned_data['subdomain']}.png",
@@ -66,9 +62,7 @@ def create_site(request) -> HttpResponse | JsonResponse:
     else:
         create_site_form = CreateSite()
     context = {"FORM": create_site_form}
-    return render(
-        request=request, template_name="website/create_site.html", context=context
-    )
+    return render(request=request, template_name="website/create_site.html", context=context)
 
 
 def email_validation(request) -> HttpResponse:
@@ -86,9 +80,7 @@ def email_validation(request) -> HttpResponse:
         context = {
             "ERROR": "The URL is invalid. No token.",
         }
-        return render(
-            request=request, template_name="registration/error.html", context=context
-        )
+        return render(request=request, template_name="registration/error.html", context=context)
 
     try:
         user: User = User.objects.get(validation__random_validation_string=token)
@@ -96,9 +88,7 @@ def email_validation(request) -> HttpResponse:
         context = {
             "ERROR": "Invalid token",
         }
-        return render(
-            request=request, template_name="registration/error.html", context=context
-        )
+        return render(request=request, template_name="registration/error.html", context=context)
 
     user.validation.random_validation_string = None
     user.validation.is_validated = True
@@ -121,9 +111,7 @@ def index(request) -> HttpResponse:
     return render(request, "website/index.html", context=context)
 
 
-def process_form(
-    form, request, redirect_url: str
-) -> tuple[bool, HttpResponse | JsonResponse | HttpResponseRedirect]:
+def process_form(form, request, redirect_url: str) -> tuple[bool, HttpResponse | JsonResponse | HttpResponseRedirect]:
     """
     Process a form to identify errors and identify output required.
 
@@ -135,9 +123,7 @@ def process_form(
     Returns:
         Response to be provided to the user based on the result of validation
     """
-    response: HttpResponse | JsonResponse | HttpResponseRedirect = HttpResponse(
-        "Invalid request"
-    )
+    response: HttpResponse | JsonResponse | HttpResponseRedirect = HttpResponse("Invalid request")
     if form.is_valid():
         form.save()
         for accepted_type in request.accepted_types:
@@ -218,19 +204,14 @@ def register(request) -> HttpResponse:
     context: dict[str, CustomUserCreationForm | str] = {}
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
-        valid, response = process_form(
-            form=form, request=request, redirect_url="/user_cp"
-        )
+        valid, response = process_form(form=form, request=request, redirect_url="/user_cp")
         if valid:
             user = form.save()
             login(request, user)
             validation_string = "".join(
-                random.SystemRandom().choice(string.ascii_uppercase + string.digits)
-                for _ in range(64)
+                random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(64)
             )
-            user_validation = Validation(
-                user=user, random_validation_string=validation_string
-            )
+            user_validation = Validation(user=user, random_validation_string=validation_string)
             user_validation.save()
 
             host_details = get_host_details(request=request)
@@ -256,9 +237,7 @@ def register(request) -> HttpResponse:
         form = CustomUserCreationForm()
 
     context["FORM"] = form
-    return render(
-        request=request, template_name="registration/register.html", context=context
-    )
+    return render(request=request, template_name="registration/register.html", context=context)
 
 
 def user_cp(request) -> HttpResponse:

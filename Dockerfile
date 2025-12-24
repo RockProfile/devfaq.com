@@ -8,10 +8,6 @@ WORKDIR /site
 
 COPY dev/run /usr/bin/run
 
-COPY requirements.txt requirements.txt
-
-RUN pip install -r requirements.txt
-
 RUN chmod +x /usr/bin/run
 
 EXPOSE 8080

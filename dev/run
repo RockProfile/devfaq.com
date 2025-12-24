@@ -2,8 +2,9 @@
 
 cd /site || exit
 
-pip install -r /site/requirements.txt
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser --no-input
-python manage.py runserver 0.0.0.0:8080
+/bin/curl -LsSf https://astral.sh/uv/install.sh | sh
+/root/.local/bin/uv run manage.py
+/root/.local/bin/uv run manage.py makemigrations
+/root/.local/bin/uv run manage.py migrate
+/root/.local/bin/uv run manage.py createsuperuser --no-input
+/root/.local/bin/uv run manage.py runserver 0.0.0.0:8080

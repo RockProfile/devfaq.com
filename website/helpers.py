@@ -58,9 +58,7 @@ def delete_permissions(subdomain: str):
     ).delete()
 
 
-def resize_image(
-    image: Path, new_name: str = "", max_width: int = 0, max_height: int = 0
-) -> Path:
+def resize_image(image: Path, new_name: str = "", max_width: int = 0, max_height: int = 0) -> Path:
     """
     Resize the given image.
 
@@ -122,9 +120,7 @@ def user_add_permissions(user: User, subdomain: str, permissions: list[str]):
     content_type = ContentType.objects.get_for_model(PermissionManagement)
     for permission in permissions:
         try:
-            permission_db = Permission.objects.get(
-                content_type=content_type, codename=f"{subdomain}_{permission}"
-            )
+            permission_db = Permission.objects.get(content_type=content_type, codename=f"{subdomain}_{permission}")
             user.user_permissions.add(permission_db)
             user.save()
         except Permission.DoesNotExist:
@@ -143,9 +139,7 @@ def user_remove_permissions(user: User, subdomain: str, permissions: list[str]):
     content_type = ContentType.objects.get_for_model(PermissionManagement)
     for permission in permissions:
         try:
-            permission_db = Permission.objects.get(
-                content_type=content_type, codename=f"{subdomain}_{permission}"
-            )
+            permission_db = Permission.objects.get(content_type=content_type, codename=f"{subdomain}_{permission}")
             user.user_permissions.remove(permission_db)
             user.save()
         except Permission.DoesNotExist:
@@ -187,10 +181,7 @@ def get_host_details(request) -> HostDetails:
 
     subdomain = hostname_no_port.split(".")[0]
     hostname_without_subdomain = hostname_no_port[len(subdomain) + 1 :]
-    if (
-        hostname_no_port in allowed_hosts
-        or hostname_without_subdomain not in allowed_hosts
-    ):
+    if hostname_no_port in allowed_hosts or hostname_without_subdomain not in allowed_hosts:
         host_details.hostname = hostname_no_port
     else:
         host_details.hostname = hostname_without_subdomain

@@ -85,9 +85,7 @@ class CustomUserCreationForm(UserCreationForm):
             self.add_error("email", ValidationError("Email is already in use"))
         username = self.cleaned_data.get("username")
         if User.objects.filter(username=username).exists():
-            self.add_error(
-                "username", ValidationError("Please choose a different username")
-            )
+            self.add_error("username", ValidationError("Please choose a different username"))
         return self.cleaned_data
 
     def save(self, commit=True):

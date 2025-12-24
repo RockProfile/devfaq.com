@@ -152,17 +152,9 @@ class SubdomainTests(TestCase):
         for host_detail in host_details:
             self.dummy_request.META["HTTP_HOST"] = host_detail["host"]
             self.dummy_request.scheme = host_detail["scheme"]
-            calculated_host_details: helpers.HostDetails = helpers.get_host_details(
-                request=self.dummy_request
-            )
+            calculated_host_details: helpers.HostDetails = helpers.get_host_details(request=self.dummy_request)
             self.assertEqual(calculated_host_details.scheme, host_detail["scheme"])
-            self.assertEqual(
-                calculated_host_details.subdomain, host_detail["expected_subdomain"]
-            )
-            self.assertEqual(
-                calculated_host_details.hostname, host_detail["expected_hostname"]
-            )
-            self.assertEqual(
-                calculated_host_details.full_url, host_detail["expected_full_url"]
-            )
+            self.assertEqual(calculated_host_details.subdomain, host_detail["expected_subdomain"])
+            self.assertEqual(calculated_host_details.hostname, host_detail["expected_hostname"])
+            self.assertEqual(calculated_host_details.full_url, host_detail["expected_full_url"])
             self.assertEqual(calculated_host_details.port, host_detail["expected_port"])

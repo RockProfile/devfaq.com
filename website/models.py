@@ -26,14 +26,10 @@ def logo_file_name(instance: "Site", filename: str) -> str:
 class BiographyModel(models.Model):
     """Model to store user Biography information."""
 
-    for_user: models.ForeignKey = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
-    )
+    for_user: models.ForeignKey = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     twitter: models.CharField = models.CharField(max_length=15, blank=True, null=True)
     website: models.URLField = models.URLField(max_length=255, blank=True, null=True)
-    biography: models.CharField = models.CharField(
-        max_length=1000, blank=False, null=False
-    )
+    biography: models.CharField = models.CharField(max_length=1000, blank=False, null=False)
 
 
 class PermissionManagement(models.Model):
@@ -85,6 +81,4 @@ class Validation(models.Model):
 
     user: models.OneToOneField = models.OneToOneField(User, on_delete=models.CASCADE)
     is_validated: models.BooleanField = models.BooleanField(default=False)
-    random_validation_string: models.CharField = models.CharField(
-        max_length=64, blank=True, null=True
-    )
+    random_validation_string: models.CharField = models.CharField(max_length=64, blank=True, null=True)

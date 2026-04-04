@@ -4,9 +4,11 @@ name: UV
 on:
   pull_request:
     branches:
+      - development
       - main
   push:
     branches:
+      - development
       - main
 
 jobs:
@@ -30,7 +32,7 @@ jobs:
       - name: Set up Python
         run: uv python install
       - name: pyTest
-        run: uv run pytest tests
+        run: uv run manage.py test
       - name: Ruff (check)
         run: uv run ruff check
       - name: Ruff (format)

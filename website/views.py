@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse
 
 from website.forms import CreateSite, CustomUserCreationForm
 from website.helpers import (
@@ -36,11 +37,11 @@ def create_site(request) -> HttpResponse | JsonResponse:
     if not request.user.is_authenticated:
         return redirect("/accounts/login")
     elif not request.user.validation.is_validated:
-        return redirect("/user_cp")
+        return redirect(to="user_control_panel")
 
     if request.method == "POST":
         create_site_form = CreateSite(request.POST, request.FILES, user=request.user)
-        valid, response = process_form(form=create_site_form, request=request, redirect_url="/user_cp")
+        valid, response = process_form(form=create_site_form, request=request, redirect_url="user_control_panel")
         if valid:
             create_permissions(create_site_form.cleaned_data["subdomain"])
             user_add_permissions(
@@ -94,7 +95,7 @@ def email_validation(request) -> HttpResponse:
     user.validation.is_validated = True
     user.validation.save()
 
-    return redirect("/user_cp")
+    return redirect(to="user_control_panel")
 
 
 def index(request) -> HttpResponse:
@@ -131,7 +132,7 @@ def process_form(form, request, redirect_url: str) -> tuple[bool, HttpResponse |
                 response = process_json_success(redirect_url=redirect_url)
                 break
         if not response:
-            response = redirect(redirect_url)
+            response = redirect(to=redirect_url)
     else:
         for accepted_type in request.accepted_types:
             if "application/json" == str(accepted_type):
@@ -186,7 +187,7 @@ def process_json_success(redirect_url: str) -> JsonResponse:
     json_response = {
         "result": "success",
         "redirect": True,
-        "redirect_url": redirect_url,
+        "redirect_url": reverse(redirect_url),
     }
     return JsonResponse(json_response)
 
@@ -204,7 +205,7 @@ def register(request) -> HttpResponse:
     context: dict[str, CustomUserCreationForm | str] = {}
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
-        valid, response = process_form(form=form, request=request, redirect_url="/user_cp")
+        valid, response = process_form(form=form, request=request, redirect_url="user_control_panel")
         if valid:
             user = form.save()
             login(request, user)

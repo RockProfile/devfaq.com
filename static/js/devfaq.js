@@ -26,8 +26,8 @@ function process_failures(errors){
 
 function reset_form(){
     let errors = document.getElementsByClassName('input_error');
-    for (let i = 0;i < errors.length; i++) {
-        errors[0].classList.remove('input_error');
+    for (const element of errors) {
+        element.classList.remove('input_error');
     }
     let form_submit = document.querySelector('#submit_form');
     form_submit.disabled = false;

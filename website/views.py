@@ -41,7 +41,7 @@ def create_site(request) -> HttpResponse | JsonResponse:
 
     if request.method == "POST":
         create_site_form = CreateSite(request.POST, request.FILES, user=request.user)
-        valid, response = process_form(form=create_site_form, request=request, redirect_url="user_control_panel")
+        valid, response = process_form(form=create_site_form, request=request, target_view="user_control_panel")
         if valid:
             create_permissions(create_site_form.cleaned_data["subdomain"])
             user_add_permissions(
@@ -112,14 +112,14 @@ def index(request) -> HttpResponse:
     return render(request, "website/index.html", context=context)
 
 
-def process_form(form, request, redirect_url: str) -> tuple[bool, HttpResponse | JsonResponse | HttpResponseRedirect]:
+def process_form(form, request, target_view: str) -> tuple[bool, HttpResponse | JsonResponse | HttpResponseRedirect]:
     """
     Process a form to identify errors and identify output required.
 
     Args:
         form: Form to be processed
         request: Request that has the form data
-        redirect_url: URL to redirect too on success
+        target_view: View to redirect too on success
 
     Returns:
         Response to be provided to the user based on the result of validation
@@ -129,10 +129,10 @@ def process_form(form, request, redirect_url: str) -> tuple[bool, HttpResponse |
         form.save()
         for accepted_type in request.accepted_types:
             if "application/json" == str(accepted_type):
-                response = process_json_success(redirect_url=redirect_url)
+                response = process_json_success(target_view=target_view)
                 break
         if not response:
-            response = redirect(to=redirect_url)
+            response = redirect(to=target_view)
     else:
         for accepted_type in request.accepted_types:
             if "application/json" == str(accepted_type):
@@ -174,12 +174,12 @@ def process_json_failure(form_errors: dict[str, list[ValidationError]]) -> JsonR
     return JsonResponse(json_response)
 
 
-def process_json_success(redirect_url: str) -> JsonResponse:
+def process_json_success(target_view: str) -> JsonResponse:
     """
     Process successful form.
 
     Args:
-        redirect_url: URL the user should be redirected too
+        target_view: View the user should be redirected too
 
     Returns:
         JsonResponse: Json response containing the result.
@@ -187,7 +187,7 @@ def process_json_success(redirect_url: str) -> JsonResponse:
     json_response = {
         "result": "success",
         "redirect": True,
-        "redirect_url": reverse(redirect_url),
+        "redirect_url": reverse(target_view),
     }
     return JsonResponse(json_response)
 
@@ -205,7 +205,7 @@ def register(request) -> HttpResponse:
     context: dict[str, CustomUserCreationForm | str] = {}
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
-        valid, response = process_form(form=form, request=request, redirect_url="user_control_panel")
+        valid, response = process_form(form=form, request=request, target_view="user_control_panel")
         if valid:
             user = form.save()
             login(request, user)

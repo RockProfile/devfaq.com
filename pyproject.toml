@@ -30,7 +30,7 @@ homepage = "https://devfaq.com/"
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.2",
+    "pytest>=9.0.3",
     "pytest-cov>=7.0.0",
     "pytest-mypy-plugins>=3.2.0",
     "ruff>=0.14.10",

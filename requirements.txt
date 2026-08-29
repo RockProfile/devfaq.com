@@ -1,4 +1,4 @@
-Django==6.0.7
+Django==6.1
 django-cleanup==9.0.0
 django-debug-toolbar==7.0.0
 Pillow==12.3.0
